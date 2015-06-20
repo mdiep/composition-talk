@@ -66,7 +66,7 @@ Thinking in functions because they’re the smallest units of code. There are 3 
 
 These are the basic forms of composition. You can write a function that does all 3.
 
-Objects are a equivalent to or worse than functions
+Objects are equivalent to or worse than functions
   * Potentially multiple functions
   * Also includes state
   * Additional initialization problem
@@ -162,7 +162,7 @@ Objects are a equivalent to or worse than functions
     - We tend to resist creating new types
     - But more classes/structs/enums aren’t a bad thing
 4. This is a challenge in the stateful world of apps
-  * Views and VCs are stageful objects, so you can’t operate on them with Functional
+  * Views and VCs are stateful objects, so you can’t operate on them with Functional
   * But you can still feed them data with Functional
   * And you can still implement them with Functional
 
