@@ -70,6 +70,7 @@ Objects are equivalent to or worse than functions
   * Potentially multiple functions
   * Also includes state
   * Additional initialization problem
+  * Inheritance! :scream:
 
 ## Primitive Composition
 1. _Primitive_ because:
