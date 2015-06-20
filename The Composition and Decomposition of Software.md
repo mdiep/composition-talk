@@ -135,7 +135,7 @@ Objects are equivalent to or worse than functions
     * But something needed to call `f` anyway
     * You can easily give a name to `f(g(a))`
 3. _Composition_ chains transformations
-  * Not unlike Unix™ commands
+  * Not unlike Unix™ pipelines
   * Easily understandable, reusable, testable components
   * The highest of cohesion
   * The lowest of coupling
