@@ -59,7 +59,7 @@ Thinking in functions because they’re the smallest units of code. There are 3 
 
 1. _Primitive Composition_: `f(a) { ... g(a) ... }`
   * Call one function from within the other
-2. _Indirect Composition_: `f(a, g: A -> B) { ... g(a) ... }`
+2. _Higher-Order Composition_: `f(a, g: A -> B) { ... g(a) ... }`
   * Pass one function to the other
 3. _Functional Composition_: `f(g(a))`
   * Pass the result of one to the other
@@ -93,7 +93,7 @@ Objects are equivalent to or worse than functions
     * High if `f` is narrowly focused
     * Low if `g` has low cohesion
 
-## Indirect Composition
+## `Higher-Order` Composition
 1. Coupling and Cohesion
   1. Coupling: `f` depends on a function _like_ `g`
   2. Cohesion: `f` does what `f` _and_ a function _like_ `g` do
@@ -115,7 +115,7 @@ Objects are equivalent to or worse than functions
   * Lower the specificity of connections
   * Changes connections from 1 to 0, 1, or n
 4. _Higher-Order Functions_
-  * Indirect composition that uses a function that can be used in Functional Composition
+  * Higher-Order composition that uses an actual _function_ (think Functional Composition)
   * Behaves like Functional Composition
   * Talk more about this later
 
@@ -139,7 +139,7 @@ Objects are equivalent to or worse than functions
   * Easily understandable, reusable, testable components
   * The highest of cohesion
   * The lowest of coupling
-4. functional > indirect > primitive
+4. functional > higher order > primitive
   * Testability: easier to test
   * Reusability: easier to reuse
   * Changeability: easier to change
@@ -157,7 +157,7 @@ Objects are equivalent to or worse than functions
 2. We want to minimize the coupling and maximize the cohesion at every level
 3. If you try to mostly write functional functions, then:
   1. Innermost layers will be Functional
-  2. Middle layers will be Indirect
+  2. Middle layers will be Higher-Order
   3. Outermost layers will by Primitive
   4. You’ll end up with more value types
     - We tend to resist creating new types
@@ -179,7 +179,7 @@ A friend of mine recently asked for help architecting a data importer for his we
   * accesses database singleton
   * inserts or updates data
 
-## Indirect Architecture
+## Higher-Order Architecture
 Like original architecture, except:
   - Passes database into Importer
 
