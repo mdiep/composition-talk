@@ -98,18 +98,17 @@ Objects are equivalent to or worse than functions
   1. Coupling: `f` depends on a function _like_ `g`
   2. Cohesion: `f` does what `f` _and_ a function _like_ `g` do
   3. How high is the coupling of `f`?
-    * It still depends on what `f` and `g` do
-    * Very similar to the Primitive case
-    * But less coupling because it's less specific
+    * It depends on what `f` and functions _like_ `g` do
+    * Less coupling because it's less specific
   4. How high is the cohesion of `f`?
-    * Also very similar to the Primitive case
+    * Similar to the Primitive case
     * But the same or less cohesion
 2. Often used for _Dependency Injection_
   * DI is used to break dependencies by decreasing coupling
   * Decreases the specificity of the coupling
   * But a connection still exists
   * Does not really alter the cohesion
-  * An improvement, but not a substantial one
+  * An improvement, but often not a substantial one
   * Sometimes it's the best we can do
 3. _Callbacks_, _Delegates_, _Data Sources_, and _Notifications_ are all forms of this
   * Lower the specificity of connections
