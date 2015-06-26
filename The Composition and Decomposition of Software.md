@@ -31,8 +31,11 @@ Thesis: We should be using functional composition, and that requires changing th
     - See also: _Command/Query Separation_
 2. _Coupling_: How interconnected is this code?
   * See also: _separation of concerns_
-  * Connection isn't binary; Specificity brings higher coupling
   * Want **low**/**loose** coupling
+  * Connection isn't binary; Specificity brings higher coupling
+    - High: Implementation
+    - Large, Specific Interface
+    - Low: Small, Generic Interface
   * Stateful interfaces have high coupling. They're highly connected.
     - Side effects: observable by the world
     - Reading outside data: observing the world
@@ -59,10 +62,13 @@ Thinking in functions because they’re the smallest units of code. There are 3 
 
 1. _Primitive Composition_: `f(a) { ... g(a) ... }`
   * Call one function from within the other
+  * Uses an implementation
 2. _Higher-Order Composition_: `f(a, g: A -> B) { ... g(a) ... }`
   * Pass one function to the other
+  * Uses an interface
 3. _Functional Composition_: `f(g(a))`
   * Pass the result of one to the other
+  * Uses a value
 
 These are the basic forms of composition. You can write a function that does all 3.
 
@@ -87,6 +93,7 @@ Objects are equivalent to or worse than functions
       - If it has side effects
       - If it reads from the outside
       - etc.
+    * Coupled to `g`'s interface and implementation
   4. How high is the cohesion of `f`?
     * High if `g` is an _essential_ part of `f`
     * High if `g` has high cohesion
@@ -95,28 +102,41 @@ Objects are equivalent to or worse than functions
 
 ## `Higher-Order` Composition
 1. Coupling and Cohesion
-  1. Coupling: `f` depends on a function _like_ `g`
-  2. Cohesion: `f` does what `f` _and_ a function _like_ `g` do
+  1. Coupling: `f` depends on `g`'s _interface_
+  2. Cohesion: `f` does what `f` does _and_ what `g`'s interface does
   3. How high is the coupling of `f`?
-    * It depends on what `f` and functions _like_ `g` do
+    * It depends on what `f` does and what `g`'s interface does
+    * High if `g` is a large, specific interface
     * Less coupling because it's less specific
+    * Coupled to `g`'s interface
   4. How high is the cohesion of `f`?
     * Similar to the Primitive case
     * But the same or less cohesion
 2. Often used for _Dependency Injection_
-  * DI is used to break dependencies by decreasing coupling
-  * Decreases the specificity of the coupling
-  * But a connection still exists
+  * DI is used to break dependencies (coupling)
+  * Decreases the specificity of the coupling through abstraction
+  * But it's usually a large, specific, and leaky abstraction
+    - Is it the same interface that the class had?
+  * So the coupling is often not substantially less
+    - Can I change the behavior of `g`?
   * Does not really alter the cohesion
   * An improvement, but often not a substantial one
+    - More testable
+    - Not more reusable or changeable
   * Sometimes it's the best we can do
-3. _Callbacks_, _Delegates_, _Data Sources_, and _Notifications_ are all forms of this
+3. _Higher-Order Functions_
+  * Higher-Order composition that uses an actual _function_ (think Functional Composition)
+    - Examples: `map`, `filter`, `reduce`
+  * Behaves like Functional Composition
+  * Uses a small, often generic interface
+  * BIG improvement
+    - Testable
+    - Reusable
+    - Changeable
+  * Talk more about this later
+4. _Callbacks_, _Delegates_, _Data Sources_, and _Notifications_ are all forms of this
   * Lower the specificity of connections
   * Changes connections from 1 to 0, 1, or n
-4. _Higher-Order Functions_
-  * Higher-Order composition that uses an actual _function_ (think Functional Composition)
-  * Behaves like Functional Composition
-  * Talk more about this later
 
 ## Functional Composition
 1. _Functional_ in the mathematical sense
