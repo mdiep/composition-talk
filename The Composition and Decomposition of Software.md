@@ -100,6 +100,76 @@ Objects are equivalent to or worse than functions
     * High if `f` is narrowly focused
     * Low if `g` has low cohesion
 
+---
+
+```swift
+import Contacts
+
+func fetchContactsJSON(block: [NSObject: AnyObject] -> Void) { ... }
+
+extension CNContactStore {
+    func contactWithGivenName(givenName: String, familyName: String) -> CNContact? { ... }
+}
+
+func importFromJSON(JSON: [NSObject: AnyObject]) throws {
+    guard let contacts = JSON["contacts"] as? [[String:String]] else {
+        return
+    }
+    let store = CNContactStore()
+    let saveRequest = CNSaveRequest()
+    for data in contacts {
+        guard let givenName = data["givenName"], let familyName = data["familyName"], let email = data["email"] else {
+            continue
+        }
+        if let contact = store.contactWithGivenName(givenName, familyName: familyName) as? CNMutableContact {
+            let emails = contact.emailAddresses.map { $0.value as! String }
+            if !emails.contains(email) {
+                contact.emailAddresses += [ CNLabeledValue(label: CNLabelHome, value: email) ]
+                saveRequest.updateContact(contact)
+            }
+        } else {
+            let contact = CNMutableContact()
+            contact.givenName = givenName
+            contact.familyName = familyName
+            contact.emailAddresses = [ CNLabeledValue(label: CNLabelHome, value: email) ]
+            saveRequest.addContact(contact, toContainerWithIdentifier: nil)
+        }
+    }
+    try store.executeSaveRequest(saveRequest)
+}
+func importRemoteContacts() {
+    fetchContactsJSON() { JSON in
+        do {
+            try importFromJSON(JSON)
+        } catch {
+            print("Error! «\(error)»")
+        }
+    }
+}
+```
+
+1. `importFromJSON` is tightly coupled
+  * Contacts Framework
+    - CNContactStore
+    - CNSaveRequest
+    - CNMutableContact
+  * JSON
+    - Decoding
+    - Structure returned from the server
+2. `importFromJSON` has low cohesion
+  - Decodes JSON
+  - Queries the store
+  - Updates people
+  - Adds people
+  - Saves the store
+3. Thank goodness `fetchContactsJSON` wasn't included!
+4. Can this be tested?
+  - Not really. It depends on device state.
+5. Can it be reused?
+  - Nope. It's tied to that server, that store, and task of importing.
+6. Can it be changed?
+  - Not easily. It's a mess!
+
 ## `Higher-Order` Composition
 1. Coupling and Cohesion
   1. Coupling: `f` depends on `g`'s _interface_
@@ -138,6 +208,88 @@ Objects are equivalent to or worse than functions
   * Lower the specificity of connections
   * Changes connections from 1 to 0, 1, or n
 
+---
+
+```swift
+import Contacts
+
+func fetchContactsJSON(block: [NSObject: AnyObject] -> Void) { ... }
+
+protocol StoreType {
+    func contactWithGivenName(givenName: String, familyName: String) -> CNContact?
+    func executeSaveRequest(saveRequest: CNSaveRequest) throws
+}
+
+extension CNContactStore: StoreType {
+    func contactWithGivenName(givenName: String, familyName: String) -> CNContact? { ... }
+}
+
+func importFromJSON<S: StoreType>(JSON: [NSObject: AnyObject], intoStore: S) throws {
+    guard let contacts = JSON["contacts"] as? [[String:String]] else {
+        return
+    }
+
+    let saveRequest = CNSaveRequest()
+    for data in contacts {
+        guard let givenName = data["givenName"], let familyName = data["familyName"], let email = data["email"] else {
+            continue
+        }
+
+        if let contact = intoStore.contactWithGivenName(givenName, familyName: familyName) as? CNMutableContact {
+            let emails = contact.emailAddresses.map { $0.value as! String }
+            if !emails.contains(email) {
+                contact.emailAddresses += [ CNLabeledValue(label: CNLabelHome, value: email) ]
+                saveRequest.updateContact(contact)
+            }
+        } else {
+            let contact = CNMutableContact()
+            contact.givenName = givenName
+            contact.familyName = familyName
+            contact.emailAddresses = [ CNLabeledValue(label: CNLabelHome, value: email) ]
+            saveRequest.addContact(contact, toContainerWithIdentifier: nil)
+        }
+    }
+
+    try intoStore.executeSaveRequest(saveRequest)
+}
+
+func importRemoteContacts() {
+    fetchContactsJSON() { JSON in
+        do {
+            try importFromJSON(JSON, intoStore: CNContactStore())
+        } catch {
+            print("Error! «\(error)»")
+        }
+    }
+}
+```
+
+1. A Dependency-Injection approach
+  * Rather than call `CNContactStore` directly, we pass it in
+  * Abstracting it takes it a step further
+  * We could also abstract away `CNSaveRequest` and `CNMutableContact`
+  * Abstractions minimize the interface, which lowers coupling
+  * But we're still tied to the style of API (unless we write an adapter)
+2. `importFromJSON` is still tightly coupled
+  * ContactStoreType
+  * Contacts Framework
+    - CNSaveRequest
+    - CNMutableContact
+  * JSON
+    - Decoding
+    - Structure returned from the server
+3. `importFromJSON` has low cohesion—it's unchanged
+4. Can this be tested?
+  * _Yes_. You can write a different ContactStoreType.
+  * But then your tests depend on other code.
+5. Can it be reused?
+  * To an extent, maybe.
+  * Possible to write another ContactStoreType.
+  * But you'd have to abstract away the rest of the Contacts Framework
+  * And probably write an adapter layer
+6. Can it be changed?
+  * Still no.
+
 ## Functional Composition
 1. _Functional_ in the mathematical sense
   * Inputs map to only one output: _Referential Transparency_
@@ -169,6 +321,91 @@ Objects are equivalent to or worse than functions
     - Makes it possible to test the request without stubbing or making the request
     - Makes it possible to reuse the request but make changes to the work to be done
 
+---
+
+```swift
+import Contacts
+
+func fetchContactsJSON(block: [NSObject: AnyObject] -> Void) { ... }
+
+struct ContactInfo {
+    var familyName: String
+    var givenName: String
+    var email: String
+}
+
+extension CNContactStore {
+    func contactWithGivenName(givenName: String, familyName: String) -> CNContact? { ... }
+}
+
+func contactsFromJSON(JSON: [NSObject: AnyObject]) -> [ContactInfo] {
+    guard let contacts = JSON["contacts"] as? [[String:String]] else {
+        return []
+    }
+
+    var result: [ContactInfo] = []
+    for data in contacts {
+        if let givenName = data["givenName"], let familyName = data["familyName"], let email = data["email"] {
+            result.append(ContactInfo(familyName: familyName, givenName: givenName, email: email))
+        }
+    }
+    return result
+}
+
+func importContacts(contacts: [ContactInfo], intoStore store: CNContactStore) throws {
+    let saveRequest = CNSaveRequest()
+    for contactInfo in contacts {
+        if let contact = store.contactWithGivenName(contactInfo.givenName, familyName: contactInfo.familyName) as? CNMutableContact {
+            let emails = contact.emailAddresses.map { $0.value as! String }
+            if !emails.contains(contactInfo.email) {
+                contact.emailAddresses += [ CNLabeledValue(label: CNLabelHome, value: contactInfo.email) ]
+                saveRequest.updateContact(contact)
+            }
+        } else {
+            let contact = CNMutableContact()
+            contact.givenName = contactInfo.givenName
+            contact.familyName = contactInfo.familyName
+            contact.emailAddresses = [ CNLabeledValue(label: CNLabelHome, value: contactInfo.email) ]
+            saveRequest.addContact(contact, toContainerWithIdentifier: nil)
+        }
+    }
+    try store.executeSaveRequest(saveRequest)
+}
+
+func importRemoteContacts() {
+    fetchContactsJSON() { JSON in
+        do {
+            let contactInfo = contactsFromJSON(JSON)
+            try importContacts(contactInfo, intoStore: CNContactStore())
+        } catch {
+            print("Error! «\(error)»")
+        }
+    }
+}
+```
+
+1. Here, we split the work into two
+  * Transformation
+  * Application
+2. `contactsFromJSON` and `importContacts(intoStore:)` have lower coupling
+  * The remaining coupling is mostly essential
+  * You could apply the higher-order techniques to further reduce coupling
+3. Cohesion is much improved! We've split the work that we can
+4. Can this be tested?
+  * _Yes_. You can test the parts individually.
+  * You'll still want to use DI or mocking to test the actual importing.
+5. Can it be reused?
+  * Yes!
+    - Can plug in a different service
+    - Can plug in a different store
+    - Can do something entirely different with the `ContactInfo`
+6. Can it be changed?
+  * Yes!
+    - Can easily filter the contacts that are saved
+    - Can easily transform their info
+    - Can fix JSON decoding without touching importing
+    - Can fix importing without touching JSON decoding
+
 # Composition affects decomposition
 1. We’re used to writing functions that call other functions
   * That means rethinking our architecture
@@ -185,29 +422,6 @@ Objects are equivalent to or worse than functions
   * Views and VCs are stateful objects, so you can’t operate on them with Functional
   * But you can still feed them data with Functional
   * And you can still implement them with Functional
-
-# Example: Data Importer
-A friend of mine recently asked for help architecting a data importer for his web app. It accepted several different formats and imported the data into the database.
-
-## Original Architecture
-- Controller
-  * gets format-specific importer
-  * tells Importer to import
-- Importer Subclass
-  * reads from file
-  * accesses database singleton
-  * inserts or updates data
-
-## Higher-Order Architecture
-Like original architecture, except:
-  - Passes database into Importer
-
-## Functional Architecture
-- Controller
-  * Reads file to data
-  * Gets format-specific Mapper
-  * Maps data to records
-  * Feeds records and database to Importer
 
 # Higher Order Functions
 * Power-ups for values and functions
