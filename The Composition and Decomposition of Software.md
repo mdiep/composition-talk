@@ -715,7 +715,7 @@ func importContacts(contacts: [ContactInfo], intoStore store: CNContactStore) th
 ---
 
 # Further Reading/Watching
-* “Why Functional Programming Matters”
+* “Why Functional Programming Matters” by John Hughes
 * “Boundaries” by Gary Bernhardt
 * “The Clean Architecture in Python” by Brandon Rhodes
 * “Making Friends with Value Types” by Andy Matuschak
