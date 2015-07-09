@@ -239,6 +239,8 @@ f(g(a))
 
 ^ These are measures of Good Software™
 
+^ Ultimately, this is what we care about. We want software that we can test, reuse, and change. Just think how different our field and our products would be if we could answer _yes_ to all these questions.
+
 ---
 
 # **_Coupling_** and **_Cohesion_**
