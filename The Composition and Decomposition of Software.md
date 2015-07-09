@@ -226,6 +226,10 @@ f(g(a))
 # **_Coupling_** and **_Cohesion_**
 # are _contagious_
 
+^ A function or type inherits the coupling and cohesion of the functions and types that it uses. You can't have less coupling or more cohesion than the things that you use.
+
+^ So if your smallest units of code have high coupling and low cohesion, then the rest of your program will too.
+
 ---
 
 # **_Coupling_** and **_Cohesion_**
