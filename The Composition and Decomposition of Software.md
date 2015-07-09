@@ -109,7 +109,17 @@ f(g(a))
 
 ^ Cohesion
 * See also: _single responsibility principle_
-* Want **high** cohesion
+* Does it do a lot of things or a few things?
+* Are those things closely related?
+* Want **high** cohesion—code that does one thing well
+
+^ You can ask this at different levels of abstraction. Is my "one thing"
+* Synchronizing contacts over a network
+* Download the current set of contacts
+* Making a network request
+* Deserializing the response from the server
+
+^ We often approach this at a high-level without considering the lower levels. But we would do well to make fine-grained distinctions. In particular, it's beneficial to ask this at the computation level and not the user level.
 
 ---
 
@@ -117,11 +127,17 @@ f(g(a))
 # is different than
 # **_interpreting_** it
 
+^ From a user perspective, you're doing one thing—but these are very different tasks.
+
+^ Receiving touches is very different from creating a shape from a series of points and velocities.
+
 ---
 
 # **_Parsing_** a network response
 # is different than
 # **_presenting_** it
+
+^ What does the structure of a JSON document have to do with synchronization or presenting an error?
 
 ---
 
@@ -129,11 +145,19 @@ f(g(a))
 # is different than
 # **_persisting_** data
 
+^ Why do we put details about data persistence in our view controllers? `NSFetchRequest` has nothing to do with controlling a view.
+
+^ People often complain that MVC stands for Massive View Controller. No wonder!
+
 ---
 
 # **_Deciding_** what to do
 # is different than
 # **_doing_** it
+
+^ Generally, consider that making a decision is not the same thing as taking action.
+
+^ Really think about that. If you can only remember one thing from this talk, this might be what I'd have you remember.
 
 ^ Command/Query Separation
 
@@ -202,6 +226,10 @@ f(g(a))
 # **_Coupling_** and **_Cohesion_**
 # are _contagious_
 
+^ A function or type inherits the coupling and cohesion of the functions and types that it uses. You can't have less coupling or more cohesion than the things that you use.
+
+^ So if your smallest units of code have high coupling and low cohesion, then the rest of your program will too.
+
 ---
 
 # **_Coupling_** and **_Cohesion_**
@@ -210,6 +238,8 @@ f(g(a))
 ## Can `f` be **_changed_** without `g`?
 
 ^ These are measures of Good Software™
+
+^ Ultimately, this is what we care about. We want software that we can test, reuse, and change. Just think how different our field and our products would be if we could answer _yes_ to all these questions.
 
 ---
 
@@ -689,7 +719,9 @@ func importContacts(contacts: [ContactInfo], intoStore store: CNContactStore) th
 # Use **Primitive** composition
 # for the **_outermost_** code
 
-^ Integration
+^ Automated tests are usually split into _unit tests_, which test the parts, and _integration tests_, which tests how they're assembled.
+
+^ We want to take a similar approach with our composition. Use functional composition for the parts, and use primitive composition for the integration.
 
 ---
 
@@ -715,7 +747,7 @@ func importContacts(contacts: [ContactInfo], intoStore store: CNContactStore) th
 ---
 
 # Further Reading/Watching
-* “Why Functional Programming Matters”
+* “Why Functional Programming Matters” by John Hughes
 * “Boundaries” by Gary Bernhardt
 * “The Clean Architecture in Python” by Brandon Rhodes
 * “Making Friends with Value Types” by Andy Matuschak
