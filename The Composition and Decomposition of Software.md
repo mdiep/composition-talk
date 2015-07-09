@@ -719,7 +719,9 @@ func importContacts(contacts: [ContactInfo], intoStore store: CNContactStore) th
 # Use **Primitive** composition
 # for the **_outermost_** code
 
-^ Integration
+^ Automated tests are usually split into _unit tests_, which test the parts, and _integration tests_, which tests how they're assembled.
+
+^ We want to take a similar approach with our composition. Use functional composition for the parts, and use primitive composition for the integration.
 
 ---
 
