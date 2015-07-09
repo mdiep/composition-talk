@@ -109,7 +109,17 @@ f(g(a))
 
 ^ Cohesion
 * See also: _single responsibility principle_
-* Want **high** cohesion
+* Does it do a lot of things or a few things?
+* Are those things closely related?
+* Want **high** cohesion—code that does one thing well
+
+^ You can ask this at different levels of abstraction. Is my "one thing"
+* Synchronizing contacts over a network
+* Download the current set of contacts
+* Making a network request
+* Deserializing the response from the server
+
+^ We often approach this at a high-level without considering the lower levels. But we would do well to make fine-grained distinctions. In particular, it's beneficial to ask this at the computation level and not the user level.
 
 ---
 
@@ -117,11 +127,17 @@ f(g(a))
 # is different than
 # **_interpreting_** it
 
+^ From a user perspective, you're doing one thing—but these are very different tasks.
+
+^ Receiving touches is very different from creating a shape from a series of points and velocities.
+
 ---
 
 # **_Parsing_** a network response
 # is different than
 # **_presenting_** it
+
+^ What does the structure of a JSON document have to do with synchronization or presenting an error?
 
 ---
 
@@ -129,11 +145,19 @@ f(g(a))
 # is different than
 # **_persisting_** data
 
+^ Why do we put details about data persistence in our view controllers? `NSFetchRequest` has nothing to do with controlling a view.
+
+^ People often complain that MVC stands for Massive View Controller. No wonder!
+
 ---
 
 # **_Deciding_** what to do
 # is different than
 # **_doing_** it
+
+^ Generally, consider that making a decision is not the same thing as taking action.
+
+^ Really think about that. If you can only remember one thing from this talk, this might be what I'd have you remember.
 
 ^ Command/Query Separation
 
