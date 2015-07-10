@@ -39,7 +39,7 @@ the decomposition of our programs.
 ## **_Bricks_** designed for **_Interlocking Assembly_**
 ## **_Interlocking Assembly_** depends on **_Bricks_**
 
-^ To thing about this a little more clearly, consider LEGOs. LEGO bricks and their assembly where designed together and depend on each other.  If you changed one, you'd have to change the other.
+^ To thing about this a little more clearly, consider LEGOs. LEGO bricks and their assembly were designed together and depend on each other.  If you changed one, you'd have to change the other.
 
 ---
 
@@ -298,7 +298,7 @@ f(g(a))
 ---
 
 # Primitive Composition
-## `func f(a: A) { g(a) }`
+## `func f(a: A) { ... g(a) ... }`
 ## How high is the **_cohesion_** of `f`?
 
 ^ * `f` does what `f` _and_ `g` do
@@ -410,7 +410,7 @@ func importFromJSON(JSON: [NSObject: AnyObject]) throws {
 ^
 * `f` does what `f` does _and_ what `g`'s interface does
 * Similar to the Primitive case
-* But the same or less cohesion
+* But the same or more cohesion
 
 ---
 
@@ -512,12 +512,12 @@ func importFromJSON<S: StoreType>(JSON: [NSObject: AnyObject], intoStore: S) thr
 ^
 1. A Dependency-Injection approach
   * Rather than call `CNContactStore` directly, we pass it in
-  * Abstracting it takes it a step further
+  * Abstracting it as `StoreType` takes it a step further
   * We could also abstract away `CNSaveRequest` and `CNMutableContact`
   * Abstractions minimize the interface, which lowers coupling
   * But we're still tied to the style of API (unless we write an adapter)
 2. `importFromJSON` is still tightly coupled
-  * ContactStoreType
+  * StoreType
   * Contacts Framework
     - CNSaveRequest
     - CNMutableContact
@@ -526,11 +526,11 @@ func importFromJSON<S: StoreType>(JSON: [NSObject: AnyObject], intoStore: S) thr
     - Structure returned from the server
 3. `importFromJSON` has low cohesion—it's unchanged
 4. Can this be tested?
-  * _Yes_. You can write a different ContactStoreType.
+  * _Yes_. You can write a different StoreType.
   * But then your tests depend on other code.
 5. Can it be reused?
   * To an extent, maybe.
-  * Possible to write another ContactStoreType.
+  * Possible to write another StoreType.
   * But you'd have to abstract away the rest of the Contacts Framework
   * And probably write an adapter layer
 6. Can it be changed?
@@ -604,6 +604,12 @@ func fetchContactsJSON(block: [NSObject: AnyObject] -> Void) { ... }
 
 extension CNContactStore {
     func contactWithGivenName(givenName: String, familyName: String) -> CNContact? { ... }
+}
+
+struct ContactInfo {
+    var familyName: String
+    var givenName: String
+    var email: String
 }
 
 func importRemoteContacts() {
