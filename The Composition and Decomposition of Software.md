@@ -446,7 +446,8 @@ func importFromJSON(JSON: [NSObject: AnyObject]) throws {
     - Testable
     - Reusable
     - Changeable
-  * Talk more about this later
+  * Helps you apply your functions in generic ways
+  * These are really a subject for another talk
 
 ---
 
