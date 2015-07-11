@@ -39,7 +39,7 @@ the decomposition of our programs.
 ## **_Bricks_** designed for **_Interlocking Assembly_**
 ## **_Interlocking Assembly_** depends on **_Bricks_**
 
-^ To thing about this a little more clearly, consider LEGOs. LEGO bricks and their assembly were designed together and depend on each other.  If you changed one, you'd have to change the other.
+^ To think about this a little more clearly, consider LEGOs. LEGO bricks and their assembly were designed together and depend on each other.  If you changed one, you'd have to change the other.
 
 ---
 
